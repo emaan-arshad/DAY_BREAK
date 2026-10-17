@@ -34,6 +34,9 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      - name: Run unit tests
+        run: npm test
+
       - name: Build Next.js application
         run: npm run build
 
