@@ -1,0 +1,51 @@
+name: DAYBREAK CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, Typecheck, Build & PDF Smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js from .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run typecheck
+        run: npm run typecheck
+
+      - name: Build Next.js application
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Run PDF smoke test
+        run: npm run pdf:smoke
+
+      - name: Upload smoke PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-pdf
+          path: output/smoke.pdf
+          if-no-files-found: error
