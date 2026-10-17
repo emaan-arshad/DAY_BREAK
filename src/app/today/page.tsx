@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -5,11 +6,10 @@ import {
   EditionSnapshotSchema,
   type EditionSnapshot,
 } from "@/lib/edition/schema";
+import { EditionSkeleton } from "@/components/EditionSkeleton";
 import { TodayEditionView } from "@/components/TodayEditionView";
 
-export const dynamic = "force-dynamic";
-
-export default async function TodayPage() {
+async function TodayEditionContent() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -64,5 +64,13 @@ export default async function TodayPage() {
       userEmail={user.email ?? null}
       initialError={initialError}
     />
+  );
+}
+
+export default function TodayPage() {
+  return (
+    <Suspense fallback={<EditionSkeleton />}>
+      <TodayEditionContent />
+    </Suspense>
   );
 }
