@@ -1,67 +1,75 @@
-import Image from "next/image";
+import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex min-h-screen flex-col bg-[#F5F1E8] text-[#191919]">
+      <SiteHeader showSignOut={false} />
+
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-4 py-16 sm:px-8">
+        <div className="border-t-2 border-b border-[#191919] py-3 text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#4A4742]">
+            Daily Personal Broadsheet · Finite &amp; Source-Attributed
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <section className="py-12 text-center sm:py-16">
+          <h1 className="font-display text-5xl font-bold tracking-tight text-[#191919] sm:text-7xl">
+            DAYBREAK
+          </h1>
+          <p className="font-display mt-4 text-2xl italic text-[#A84432] sm:text-3xl">
+            Your morning, edited for you.
+          </p>
+          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-[#4A4742]">
+            Instead of an endless feed, Daybreak gathers trusted reporting
+            across the web and composes one finite morning newspaper—available
+            on the web and as a print-designed PDF.
+          </p>
+
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center border border-[#191919] bg-[#191919] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#F5F1E8] transition-colors hover:border-[#A84432] hover:bg-[#A84432] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A84432]"
+            >
+              Sign in to Read
+            </Link>
+            <Link
+              href="/today"
+              className="inline-flex items-center justify-center border border-[#191919] bg-transparent px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#191919] transition-colors hover:bg-[#EFEADD] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#A84432]"
+            >
+              Open Today&apos;s Edition
+            </Link>
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 gap-6 border-t border-[#D6CFC1] pt-8 text-left sm:grid-cols-3">
+          <div className="border-l border-[#D6CFC1] pl-4">
+            <h2 className="font-display text-base font-bold text-[#191919]">
+              Finite by Design
+            </h2>
+            <p className="mt-1 text-sm text-[#4A4742]">
+              One calm daily edition sized to your reading budget—finish your
+              paper and get on with your morning.
+            </p>
+          </div>
+          <div className="border-l border-[#D6CFC1] pl-4">
+            <h2 className="font-display text-base font-bold text-[#191919]">
+              Grounded &amp; Attributed
+            </h2>
+            <p className="mt-1 text-sm text-[#4A4742]">
+              Every story links directly to its original publisher with honest
+              coverage disclosures.
+            </p>
+          </div>
+          <div className="border-l border-[#D6CFC1] pl-4">
+            <h2 className="font-display text-base font-bold text-[#191919]">
+              Web &amp; Print Parity
+            </h2>
+            <p className="mt-1 text-sm text-[#4A4742]">
+              Read online or download the same immutable edition formatted as a
+              traditional newspaper PDF.
+            </p>
+          </div>
         </div>
       </main>
     </div>
