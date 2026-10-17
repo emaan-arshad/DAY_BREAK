@@ -60,3 +60,24 @@ Shared article data is kept strictly separate from private reader data, with Row
 - **Idempotent Daily Generation**: Unique key on `(user_id, local_date, version)`. Repeated scheduler triggers never create duplicate editions.
 - **Immutable Snapshots**: Published text is stored directly inside `editions.content_json` rather than pointing to mutable live summaries.
 - **Forward-Only Learning**: Reader feedback updates `preferences` to shape future editions (or explicit new `version` regenerations), leaving historical editions untouched.
+
+## 4. Database (`supabase/migrations/20261017000000_init.sql`)
+
+The initial PostgreSQL migration defines the schema, triggers, Row-Level Security (RLS) policies, explicit table grants, and private Storage configuration:
+
+### Tables
+- **`public.profiles`**: One row per reader (`user_id` PK referencing `auth.users`), storing `display_name`, `timezone`, `region`, `delivery_time`, `reading_minutes` (`5 | 10 | 15`), `depth` (`brief | standard | deep`), `goals`, `excluded_sources`, and `onboarding_complete`. Automatically provisioned on signup via the `on_auth_user_created` trigger.
+- **`public.preferences`**: The editable *"My editor"* interest profile with bounded `explicit_weight` and `learned_weight` (`-1..1`), `kind` (`topic | entity`), `label`, and `origin` (`onboarding | feedback | manual`), unique on `(user_id, kind, label)`.
+- **`public.sources`**: Curated, permitted news feeds and APIs (`rss | guardian | newsdata`), tracking `feed_url`, `default_topics`, `status` (`active | paused | failing`), `last_success_at`, and `last_error`. Seeded with *BBC News — World*.
+- **`public.articles`**: Normalized, deduplicated shared stories (`canonical_url` unique, `content_hash`, `excerpt`, `extraction_status`), plus `summary_json` and `summarized_at` to cache grounded LLM summaries so each article is summarized once.
+- **`public.editions`**: Immutable published daily snapshots (`content_json`, `profile_snapshot`, `source_cutoff`, `state`, `pdf_status`, `pdf_storage_key`) with a `unique (user_id, local_date, version)` constraint for idempotency.
+- **`public.feedback_events`**: Explicit and passive reader signals (`open_original`, `save`, `unsave`, `more`, `less`, `skip`, `expand`, `dwell`) with optional `reason` (`already_know | not_interested | not_now`) linked to an edition and story.
+- **`public.jobs`**: Service-role-only bookkeeping for `ingest`, `edition`, and `pdf` jobs keyed by `idempotency_key`.
+
+### Security Model
+- **Strict Privilege Separation**: All grants are revoked from `anon`. Every table has RLS enabled.
+- **Shared Read, Server-Only Write**: Authenticated readers can `SELECT` from `sources` and `articles`, while only the server (`service_role`) can insert or update them.
+- **Private Reader Isolation**: Readers can read/write only their own `profiles` and `preferences`, and can `SELECT` and `INSERT` their own `feedback_events` (verified against ownership of the target `edition_id`).
+- **Immutable Editions**: Authenticated readers can `SELECT` only their own rows in `editions` (`auth.uid() = user_id`), with no `INSERT`, `UPDATE`, or `DELETE` privileges—only `service_role` can create or update edition snapshots.
+- **Private PDF Storage**: Bucket `editions` is private (`public = false`); storage RLS restricts `SELECT` on `storage.objects` to paths under `editions/{auth.uid()}/*`, and only the server uploads PDFs.
+
